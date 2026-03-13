@@ -1,4 +1,4 @@
-# SYNAPSE
+# [SYNAPSE]([https://your-vercel-link-here.vercel.app](https://synapse-beta-ten.vercel.app/))
 
 __SYNAPSE__ is a zero-dependency, interactive Algorithm and Data Structure Visualizer built with React. It uses JavaScript generator functions and SVG to animate and explain computer science concepts in real-time.
 
