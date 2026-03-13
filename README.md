@@ -1,6 +1,6 @@
 # SYNAPSE 
 
-__SYNAPSE is a zero-dependency, interactive Algorithm and Data Structure Visualizer built with React. It uses JavaScript generator functions and SVG to animate and explain computer science concepts in real-time.
+__SYNAPSE__ is a zero-dependency, interactive Algorithm and Data Structure Visualizer built with React. It uses JavaScript generator functions and SVG to animate and explain computer science concepts in real-time.
 
 ## Features
 
@@ -18,12 +18,3 @@ __SYNAPSE is a zero-dependency, interactive Algorithm and Data Structure Visuali
 
 ---
 
-## Getting Started
-
-To run this visualizer locally, clone the repository and drop the component into your React environment.
-
-```bash
-
-
-# Start the local development server
-npm start
