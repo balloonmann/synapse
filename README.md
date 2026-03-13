@@ -1,6 +1,6 @@
 # SYNAPSE
 
-**[Live Demo: Synapse Algorithm Visualizer](https://synapse-beta-ten.vercel.app/)**
+**[Live Demo](https://synapse-beta-ten.vercel.app/)**
 
 **SYNAPSE** is a zero-dependency, interactive Algorithm and Data Structure Visualizer built with React. It uses JavaScript generator functions and SVG to animate and explain computer science concepts in real-time.
 
