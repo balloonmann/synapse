@@ -1,20 +1,16 @@
-# SYNAPSE 
+# React + Vite
 
-__SYNAPSE__ is a zero-dependency, interactive Algorithm and Data Structure Visualizer built with React. It uses JavaScript generator functions and SVG to animate and explain computer science concepts in real-time.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
-* __Interactive Animations__: Step-by-step visualizations for algorithms and data structures.
-* __Live Execution Log__: Real-time text output explaining logical comparisons at each step.
-* __Complexity References__: Built-in Big-O time and space complexity cheat sheets.
-* __Execution Controls__: Play, Stop, Reset, and Animation Speed adjustments.
-* __Self-Contained__: Pure CSS custom properties injected via JavaScript with no external dependencies.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Tech Stack
+## React Compiler
 
-* __Framework__: React (Functional Components, Hooks).
-* __Execution__: JavaScript `async function*` (generators) to control algorithmic steps without blocking the main thread.
-* __Rendering__: DOM/CSS for arrays; dynamic `<svg>` for Trees, Graphs, and Linked Lists.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
----
+## Expanding the ESLint configuration
 
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
