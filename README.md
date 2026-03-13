@@ -1,33 +1,29 @@
-# SYNAPSE v2
-SYNAPSE v2 is a zero-dependency, interactive Algorithm and Data Structure Visualizer built with React. It uses JavaScript generator functions and SVG to animate and explain computer science concepts in real-time.
+# SYNAPSE 
 
-Features
-Interactive Animations: Step-by-step visualizations for algorithms and data structures.
+__SYNAPSE is a zero-dependency, interactive Algorithm and Data Structure Visualizer built with React. It uses JavaScript generator functions and SVG to animate and explain computer science concepts in real-time.
 
-Live Execution Log: Real-time text output explaining logical comparisons at each step.
+## Features
 
-Complexity References: Built-in Big-O time and space complexity cheat sheets.
+* __Interactive Animations__: Step-by-step visualizations for algorithms and data structures.
+* __Live Execution Log__: Real-time text output explaining logical comparisons at each step.
+* __Complexity References__: Built-in Big-O time and space complexity cheat sheets.
+* __Execution Controls__: Play, Stop, Reset, and Animation Speed adjustments.
+* __Self-Contained__: Pure CSS custom properties injected via JavaScript with no external dependencies.
 
-Execution Controls: Play, Stop, Reset, and Animation Speed adjustments.
+## Tech Stack
 
-Self-Contained: Pure CSS custom properties injected via JavaScript with no external dependencies.
+* __Framework__: React (Functional Components, Hooks).
+* __Execution__: JavaScript `async function*` (generators) to control algorithmic steps without blocking the main thread.
+* __Rendering__: DOM/CSS for arrays; dynamic `<svg>` for Trees, Graphs, and Linked Lists.
 
-Supported Concepts
-Linear & Hash Structures: Arrays, Linked Lists, Stacks, Queues, Hash Maps.
+---
 
-Trees & Graphs: BST, AVL, B-Trees, Heaps, Tries, Disjoint Sets.
+## Getting Started
 
-Search & Traversal: Linear/Binary Search, BFS, DFS, Tree Traversals.
+To run this visualizer locally, clone the repository and drop the component into your React environment.
 
-Sorting & Techniques: Merge Sort, Quick Sort, Two-Pointer, Sliding Window.
+```bash
 
-Advanced Algorithms: Pathfinding (Dijkstra, A*), Spanning Trees (Kruskal, Prim), Dynamic Programming (Fibonacci, Knapsack), Topological Sort.
 
-Numeric: Matrix Multiplication, Vectorized Operations.
-
-Tech Stack
-Framework: React (Functional Components, Hooks).
-
-Execution: JavaScript async function* (generators) to control algorithmic steps without blocking the main thread.
-
-Rendering: DOM/CSS for arrays; dynamic <svg> for Trees, Graphs, and Linked Lists.
+# Start the local development server
+npm start
