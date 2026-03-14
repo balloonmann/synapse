@@ -70,14 +70,21 @@ const STYLES = `
   --t-base: 200ms ease;
 }
 
-html, body, #root { height: 100%; background: var(--c-bg); }
+html, body, #root {
+  height: 100%;
+  background: var(--c-bg);
+  /* prevent body-level scroll on desktop */
+  overflow: hidden;
+}
 
-/* ── Layout ── */
+/* ── Desktop Layout ── */
 .synapse-shell {
   display: grid;
   grid-template-rows: 56px 1fr;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 240px 1fr;
+  width: 100vw;
   height: 100vh;
+  max-width: 100vw;
   font-family: var(--font-mono);
   color: var(--c-text);
   background: var(--c-bg);
@@ -92,7 +99,9 @@ html, body, #root { height: 100%; background: var(--c-bg); }
   padding: 0 var(--sp-6);
   background: var(--c-surface);
   border-bottom: 1px solid var(--c-border);
-  z-index: 10;
+  z-index: 20;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .synapse-sidebar {
@@ -100,13 +109,21 @@ html, body, #root { height: 100%; background: var(--c-bg); }
   border-right: 1px solid var(--c-border);
   overflow-y: auto;
   overflow-x: hidden;
+  height: 100%;
 }
 
 .synapse-main {
   overflow-y: auto;
-  padding: var(--sp-6);
+  overflow-x: hidden;
+  padding: var(--sp-5);
   background: var(--c-bg);
+  height: 100%;
+  min-width: 0;
 }
+
+/* panels inside main must not exceed viewport width */
+.synapse-main > * { max-width: 100%; min-width: 0; }
+.panel { min-width: 0; overflow: hidden; }
 
 /* ── Header ── */
 .header-brand {
@@ -655,20 +672,119 @@ html, body, #root { height: 100%; background: var(--c-bg); }
 
 /* ── Step log ── */
 .step-log {
-  height: 80px;
   overflow-y: auto;
   background: var(--c-raised);
   border: 1px solid var(--c-border);
   border-radius: var(--r-md);
   padding: var(--sp-2) var(--sp-3);
-  margin-top: var(--sp-4);
+  margin-top: var(--sp-3);
   font-size: 11px;
   color: var(--c-text-2);
   line-height: 1.8;
+  transition: height 150ms ease;
 }
 
 .step-log-entry { color: var(--c-text-3); }
 .step-log-entry.current { color: var(--c-accent); font-weight: 600; }
+
+/* ── Log footer (speed + height controls) ── */
+.log-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+  margin-top: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+}
+.log-footer-group {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.log-footer-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--c-text-3);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.log-ctrl-btn {
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--c-border-hi);
+  background: transparent;
+  color: var(--c-text-3);
+  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.log-ctrl-btn:hover { color: var(--c-text); background: var(--c-raised); border-color: var(--c-text-3); }
+.log-ctrl-btn.active { background: var(--c-accent); color: #000; border-color: var(--c-accent); }
+.log-ctrl-btn:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
+
+/* ── Input panel (custom user input per visualizer) ── */
+.input-panel {
+  background: var(--c-raised);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  margin-bottom: var(--sp-4);
+  overflow: hidden;
+}
+.input-panel-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4);
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: background var(--t-fast);
+}
+.input-panel-toggle:hover { background: var(--c-border); }
+.input-panel-toggle:focus-visible { outline: 2px solid var(--c-accent); outline-offset: -2px; }
+.input-panel-toggle-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--c-text-2);
+  text-transform: uppercase;
+}
+.input-panel-chevron {
+  font-size: 11px;
+  color: var(--c-text-3);
+  transition: transform var(--t-base);
+}
+.input-panel-chevron.open { transform: rotate(90deg); }
+.input-panel-body {
+  padding: var(--sp-4);
+  border-top: 1px solid var(--c-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.input-panel-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+.input-panel-hint {
+  font-size: 10px;
+  color: var(--c-text-3);
+  line-height: 1.6;
+}
+.input-error {
+  font-size: 11px;
+  color: var(--c-red);
+  min-height: 16px;
+}
 
 /* ── Trie ── */
 .trie-word-list {
@@ -694,13 +810,170 @@ html, body, #root { height: 100%; background: var(--c-bg); }
   color: var(--c-accent);
 }
 
+/* ── Mobile bottom nav ── */
+.mobile-nav-bar {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+  z-index: 50;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.mobile-nav-bar::-webkit-scrollbar { display: none; }
+.mobile-nav-inner {
+  display: flex;
+  height: 100%;
+  align-items: stretch;
+  min-width: max-content;
+  padding: 0 var(--sp-2);
+}
+.mobile-nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 var(--sp-3);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--c-text-3);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color var(--t-fast), border-color var(--t-fast);
+  min-width: 58px;
+}
+.mobile-nav-tab:hover { color: var(--c-text-2); }
+.mobile-nav-tab.active { color: var(--c-accent); border-bottom-color: var(--c-accent); }
+.mobile-nav-tab:focus-visible { outline: 2px solid var(--c-accent); outline-offset: -2px; }
+.mobile-cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Mobile drawer ── */
+.mobile-drawer {
+  display: none;
+  position: fixed;
+  bottom: 56px; left: 0; right: 0;
+  max-height: 52vh;
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+  z-index: 45;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  transform: translateY(100%);
+  transition: transform 220ms ease;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+}
+.mobile-drawer.open { transform: translateY(0); }
+.mobile-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-5);
+  background: var(--c-raised);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.mobile-drawer-cat-name {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--c-accent);
+}
+.mobile-drawer-close {
+  padding: var(--sp-1) var(--sp-3);
+  background: none;
+  border: 1px solid var(--c-border-hi);
+  border-radius: var(--r-sm);
+  color: var(--c-text-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+}
+.mobile-drawer-close:hover { color: var(--c-text); border-color: var(--c-text-3); }
+.mobile-drawer-item {
+  display: block;
+  width: 100%;
+  padding: var(--sp-4) var(--sp-5);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--c-border);
+  color: var(--c-text-2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.mobile-drawer-item:hover { background: var(--c-raised); color: var(--c-text); }
+.mobile-drawer-item.active { color: var(--c-accent); background: var(--c-raised); }
+.mobile-drawer-item:focus-visible { outline: 2px solid var(--c-accent); outline-offset: -2px; }
+
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 44;
+}
+.mobile-overlay.open { display: block; }
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
+  html, body, #root { overflow: auto; height: auto; }
+
   .synapse-shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: 56px auto 1fr;
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: auto;
+    min-height: 100svh;
+    min-height: 100vh; /* fallback */
+    overflow: visible;
   }
+
+  .synapse-header {
+    grid-column: unset;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    flex-shrink: 0;
+  }
+
   .synapse-sidebar { display: none; }
+
+  .synapse-main {
+    flex: 1;
+    overflow: visible;
+    padding: var(--sp-4) var(--sp-3);
+    padding-bottom: calc(56px + var(--sp-8));
+    height: auto;
+  }
+
+  .mobile-nav-bar { display: flex; }
+  .mobile-drawer { display: block; }
+
+  .panel { border-radius: var(--r-md); padding: var(--sp-4); }
+  .panel-header { flex-direction: column; align-items: flex-start; gap: var(--sp-3); }
+  .panel-controls { width: 100%; justify-content: flex-start; }
+  .panel-title { font-size: 15px; }
+  .sort-canvas { height: 130px; }
+  .array-cell-box { width: 32px; height: 32px; font-size: 10px; }
+  .svg-canvas { width: 100%; }
+  .log-footer { gap: var(--sp-2); }
+  .header-tagline { display: none; }
+  .header-meta { font-size: 10px; max-width: 40vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 `;
 
@@ -1035,17 +1308,78 @@ function Legend({ items }) {
   );
 }
 
-function StepLog({ entries }) {
+function StepLog({ entries, speed, onSpeedChange, logHeight, onLogHeightChange }) {
   const ref = useRef(null);
   useEffect(() => { if (ref.current) ref.current.scrollTop = ref.current.scrollHeight; }, [entries]);
+
+  const SPEEDS = [
+    { label: "0.25×", value: 8 },
+    { label: "0.5×",  value: 22 },
+    { label: "1×",    value: 50 },
+    { label: "2×",    value: 75 },
+    { label: "4×",    value: 95 },
+  ];
+  const HEIGHTS = [
+    { label: "XS", value: 56  },
+    { label: "SM", value: 100 },
+    { label: "MD", value: 160 },
+    { label: "LG", value: 260 },
+  ];
+
+  const activeSpeedIdx = SPEEDS.reduce((best, s, i) =>
+    Math.abs(s.value - (speed ?? 50)) < Math.abs(SPEEDS[best].value - (speed ?? 50)) ? i : best, 2);
+  const activeHeightIdx = HEIGHTS.findIndex(h => h.value === (logHeight ?? 100));
+
   return (
-    <div className="step-log" ref={ref} aria-live="polite" aria-label="Step log">
-      {entries.length === 0
-        ? <span className="step-log-entry">Ready. Press Run to start.</span>
-        : entries.map((e, i) => (
-            <div key={i} className={`step-log-entry${i === entries.length-1 ? " current" : ""}`}>{e}</div>
-          ))
-      }
+    <div>
+      <div className="log-footer" role="group" aria-label="Log controls">
+        {onSpeedChange && (
+          <div className="log-footer-group">
+            <span className="log-footer-label">Speed</span>
+            {SPEEDS.map((s, i) => (
+              <button
+                key={s.value}
+                className={`log-ctrl-btn${i === activeSpeedIdx ? " active" : ""}`}
+                onClick={() => onSpeedChange(s.value)}
+                aria-pressed={i === activeSpeedIdx}
+                aria-label={`Speed ${s.label}`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        )}
+        {onLogHeightChange && (
+          <div className="log-footer-group">
+            <span className="log-footer-label">Log size</span>
+            {HEIGHTS.map((h, i) => (
+              <button
+                key={h.value}
+                className={`log-ctrl-btn${i === activeHeightIdx ? " active" : ""}`}
+                onClick={() => onLogHeightChange(h.value)}
+                aria-pressed={i === activeHeightIdx}
+                aria-label={`Log ${h.label}`}
+              >
+                {h.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div
+        className="step-log"
+        ref={ref}
+        style={{ height: logHeight ?? 100 }}
+        aria-live="polite"
+        aria-label="Step log"
+      >
+        {entries.length === 0
+          ? <span className="step-log-entry">Ready. Press Run to start.</span>
+          : entries.map((e, i) => (
+              <div key={i} className={`step-log-entry${i === entries.length-1 ? " current" : ""}`}>{e}</div>
+            ))
+        }
+      </div>
     </div>
   );
 }
@@ -1060,6 +1394,26 @@ function EmptyState({ icon, title, body }) {
   );
 }
 
+function InputPanel({ title = "Custom Input", open, onToggle, children }) {
+  return (
+    <div className="input-panel">
+      <button
+        className="input-panel-toggle"
+        onClick={onToggle}
+        aria-expanded={open}
+      >
+        <span className="input-panel-toggle-label">{title}</span>
+        <span className={`input-panel-chevron${open ? " open" : ""}`} aria-hidden="true">›</span>
+      </button>
+      {open && (
+        <div className="input-panel-body">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SkeletonBlock({ height = 200 }) {
   return <div className="skeleton" style={{height}} aria-hidden="true" />;
 }
@@ -1067,7 +1421,7 @@ function SkeletonBlock({ height = 200 }) {
 // ─── 4. VISUALIZER COMPONENTS ─────────────────────────────────────────────────
 
 // ── 4a. Array/Sort Visualizer (shared by sort, search, two-pointer, sliding window)
-function ArrayVisualizer({ frames, onRun, onReset, onSpeedChange, running, speed, title, subtitle, controls, showBars=false }) {
+function ArrayVisualizer({ frames, onRun, onReset, onSpeedChange, running, speed, logHeight, onLogHeightChange, title, subtitle, controls, showBars=false }) {
   const frame = frames[frames.length-1] || { arr:[], indices:[], sorted:[], active:[], pA:-1, pB:-1, windowStart:-1, windowEnd:-1 };
   const arr = frame.arr || [];
   const logs = frames.map(f => f.log).filter(Boolean);
@@ -1109,7 +1463,6 @@ function ArrayVisualizer({ frames, onRun, onReset, onSpeedChange, running, speed
           {controls}
           <Btn variant={running ? "danger" : "primary"} onClick={onRun}>{running ? "Stop" : "Run"}</Btn>
           <Btn variant="secondary" onClick={onReset} disabled={running}>Reset</Btn>
-          <input className="range" type="range" min="1" max="100" value={speed} onChange={e => onSpeedChange(+e.target.value)} aria-label="Animation speed" style={{width:80}} />
         </div>
       </header>
 
@@ -1136,13 +1489,18 @@ function ArrayVisualizer({ frames, onRun, onReset, onSpeedChange, running, speed
           )
       }
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={onSpeedChange} logHeight={logHeight} onLogHeightChange={onLogHeightChange} />
     </section>
   );
 }
 
 // ── 4b. Linked List Visualizer
-function LinkedListVisualizer({ title, subtitle, doubly=false }) {
+function LinkedListVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle, doubly=false }) {
   const [nodes, setNodes] = useState([12, 27, 45, 8, 33]);
   const [input, setInput] = useState("");
   const [highlighted, setHighlighted] = useState(null);
@@ -1217,13 +1575,18 @@ function LinkedListVisualizer({ title, subtitle, doubly=false }) {
           </svg>
         )
       }
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4c. Stack / Queue Visualizer
-function StackQueueVisualizer({ title, subtitle, mode="stack" }) {
+function StackQueueVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle, mode="stack" }) {
   const [items, setItems] = useState([]);
   const [input, setInput] = useState("");
   const [logs, setLogs] = useState([]);
@@ -1285,13 +1648,18 @@ function StackQueueVisualizer({ title, subtitle, mode="stack" }) {
             </div>
           )
       }
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4d. Circular Queue
-function CircularQueueVisualizer({ title, subtitle }) {
+function CircularQueueVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle }) {
   const MAX = 8;
   const [queue, setQueue] = useState(Array(MAX).fill(null));
   const [front, setFront] = useState(0);
@@ -1354,13 +1722,18 @@ function CircularQueueVisualizer({ title, subtitle }) {
         <text x={250} y={46} fill="var(--c-blue)" fontSize={10} fontFamily="var(--font-mono)">R = Rear</text>
       </svg>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4e. Hash Table / Map / Collision
-function HashVisualizer({ title, subtitle, mode="chaining" }) {
+function HashVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle, mode="chaining" }) {
   const SIZE = 10;
   const [table, setTable] = useState(() => Array.from({length:SIZE}, ()=>[]));
   const [input, setInput] = useState("");
@@ -1423,13 +1796,18 @@ function HashVisualizer({ title, subtitle, mode="chaining" }) {
         ))}
       </div>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4f. BST / Binary Tree / AVL
-function TreeVisualizer({ title, subtitle, mode="bst" }) {
+function TreeVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle, mode="bst" }) {
   const [values, setValues] = useState([50,25,75,12,37,62,88]);
   const [input, setInput] = useState("");
   const [highlighted, setHighlighted] = useState(null);
@@ -1524,19 +1902,22 @@ function TreeVisualizer({ title, subtitle, mode="bst" }) {
         </div>
       )}
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4g. Heap / Priority Queue
 function HeapVisualizer({ title, subtitle }) {
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
   const [heap, setHeap] = useState([90,75,80,55,60,65,70]);
   const [input, setInput] = useState("");
   const [highlighted, setHighlighted] = useState([]);
   const [logs, setLogs] = useState([]);
   const [running, setRunning] = useState(false);
-  const [speed, setSpeed] = useState(50);
   const runRef = useRef(false);
 
   const parent = i => Math.floor((i-1)/2);
@@ -1570,12 +1951,12 @@ function HeapVisualizer({ title, subtitle }) {
     if (r<n && a[r]>a[largest]) largest=r;
     setHighlighted([i,l<n?l:-1,r<n?r:-1]);
     setLogs(prev=>[...prev,`Heapify at ${i}: checking children l=${l<n?a[l]:'—'} r=${r<n?a[r]:'—'}`]);
-    await sleep(Math.max(80,300-speed*2));
+    await sleep(Math.max(10, Math.round(580 - speedRef.current * 5.8)));
     if (largest!==i) {
       [a[i],a[largest]]=[a[largest],a[i]];
       setHeap([...a]); setHighlighted([i,largest]);
       setLogs(prev=>[...prev,`Swap a[${i}]=${a[largest]} <-> a[${largest}]=${a[i]}`]);
-      await sleep(Math.max(80,300-speed*2));
+      await sleep(Math.max(10, Math.round(580 - speedRef.current * 5.8)));
       await heapifyStep(a,n,largest);
     }
   };
@@ -1647,13 +2028,18 @@ function HeapVisualizer({ title, subtitle }) {
         ))}
       </svg>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4h. Trie
-function TrieVisualizer({ title, subtitle }) {
+function TrieVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle }) {
   const [words, setWords] = useState(["apple","app","apt","bat","ball"]);
   const [input, setInput] = useState("");
   const [search, setSearch] = useState("");
@@ -1749,13 +2135,18 @@ function TrieVisualizer({ title, subtitle }) {
         ))}
       </div>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4i. Graph Visualizer (Directed/Undirected/Weighted + BFS/DFS/Dijkstra/A*/Kruskal/Prim/Topo)
-function GraphVisualizer({ title, subtitle, mode="undirected" }) {
+function GraphVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle, mode="undirected" }) {
   const defaultNodes = [
     {id:0,x:120,y:80,label:"A"},{id:1,x:280,y:60,label:"B"},{id:2,x:420,y:100,label:"C"},
     {id:3,x:160,y:200,label:"D"},{id:4,x:320,y:180,label:"E"},{id:5,x:460,y:220,label:"F"},
@@ -1938,13 +2329,18 @@ function GraphVisualizer({ title, subtitle, mode="undirected" }) {
         ))}
       </svg>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4j. Union-Find / Path Compression
-function UnionFindVisualizer({ title, subtitle }) {
+function UnionFindVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle }) {
   const N = 8;
   const [parent, setParent] = useState(Array.from({length:N},(_,i)=>i));
   const [rank, setRank] = useState(Array(N).fill(0));
@@ -2016,14 +2412,19 @@ function UnionFindVisualizer({ title, subtitle }) {
         ))}
       </svg>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4k. Pathfinding Grid (Dijkstra / A*)
 const PF_ROWS=16, PF_COLS=28;
-function PathfindingVisualizer({ title, subtitle }) {
+function PathfindingVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle }) {
   const [grid, setGrid] = useState(()=>Array.from({length:PF_ROWS},()=>Array(PF_COLS).fill(0)));
   const [start, setStart] = useState({r:3,c:3});
   const [end, setEnd] = useState({r:12,c:24});
@@ -2160,13 +2561,18 @@ function PathfindingVisualizer({ title, subtitle }) {
         ))}
       </div>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4l. Matrix Multiplication
-function MatrixVisualizer({ title, subtitle }) {
+function MatrixVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle }) {
   const [size, setSize] = useState(3);
   const mkRand = (s) => Array.from({length:s},()=>Array.from({length:s},()=>Math.floor(Math.random()*9)+1));
   const [A, setA] = useState(()=>mkRand(3));
@@ -2247,13 +2653,18 @@ function MatrixVisualizer({ title, subtitle }) {
         <MatGrid data={C || Array.from({length:size},()=>Array(size).fill(""))} type="C" label="RESULT C" />
       </div>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4m. Dynamic Programming
-function DPVisualizer({ title, subtitle, mode="fib" }) {
+function DPVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle, mode="fib" }) {
   const [n, setN] = useState(10);
   const [W, setW] = useState(10);
   const [dp, setDp] = useState([]);
@@ -2364,17 +2775,20 @@ function DPVisualizer({ title, subtitle, mode="fib" }) {
 
       {dp.length===0&&!dpTable && <EmptyState icon="[ ]" title="No data" body="Press Run to start the DP computation." />}
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4n. Floyd's Cycle Detection
 function FloydVisualizer({ title, subtitle }) {
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
   const [list] = useState([1,3,5,7,9,5,3]); // has cycle back to index 2
   const [frames, setFrames] = useState([]);
   const [running, setRunning] = useState(false);
-  const [speed, setSpeed] = useState(50);
   const runRef = useRef(false);
 
   const run = async () => {
@@ -2385,7 +2799,7 @@ function FloydVisualizer({ title, subtitle }) {
     for await (const f of gen) {
       if (!runRef.current) break;
       frms.push(f); setFrames([...frms]);
-      await sleep(Math.max(50,400-speed*3));
+      await sleep(Math.max(10, Math.round(580 - speedRef.current * 5.8)));
     }
     runRef.current=false; setRunning(false);
   };
@@ -2431,13 +2845,18 @@ function FloydVisualizer({ title, subtitle }) {
         ))}
       </div>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4o. Postfix Evaluator
-function PostfixVisualizer({ title, subtitle }) {
+function PostfixVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle }) {
   const [expr, setExpr] = useState("3 4 + 2 * 7 /");
   const [stack, setStack] = useState([]);
   const [tokens, setTokens] = useState([]);
@@ -2505,13 +2924,18 @@ function PostfixVisualizer({ title, subtitle }) {
         </div>
       </div>
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
 
 // ── 4p. Vectorized Operations
-function VectorizedVisualizer({ title, subtitle }) {
+function VectorizedVisualizer({
+  const [logHeight, setLogHeight] = useState(100);
+  const [speed, setSpeed] = useState(50);
+  const speedRef = useRef(50);
+  const handleSpeed = (v) => { speedRef.current = v; setSpeed(v); };
+ title, subtitle }) {
   const [size, setSize] = useState(8);
   const mkArr = (s) => Array.from({length:s},()=>Math.floor(Math.random()*20)+1);
   const [A, setA] = useState(()=>mkArr(8));
@@ -2576,7 +3000,7 @@ function VectorizedVisualizer({ title, subtitle }) {
         </div>
       ))}
 
-      <StepLog entries={logs} />
+      <StepLog entries={logs} speed={speed} onSpeedChange={handleSpeed} logHeight={logHeight} onLogHeightChange={setLogHeight} />
     </section>
   );
 }
@@ -2584,49 +3008,185 @@ function VectorizedVisualizer({ title, subtitle }) {
 // ─── 5. VISUALIZER ROUTER ──────────────────────────────────────────────────────
 
 function useArrayAlgo(algoFn, initialArr, target) {
-  const [array] = useState(initialArr || Array.from({length:20},()=>Math.floor(Math.random()*95)+5));
-  const [frames, setFrames] = useState([{arr:[...array]}]);
+  const [array, setArray] = useState(initialArr || Array.from({length:20},()=>Math.floor(Math.random()*95)+5));
+  const [frames, setFrames] = useState([{arr:[...(initialArr || array)]}]);
   const [running, setRunning] = useState(false);
-  const [speed, setSpeed] = useState(50);
+  const [speed, setSpeedState] = useState(50);
+  const [logHeight, setLogHeight] = useState(100);
+  const speedRef = useRef(50);
   const runRef = useRef(false);
 
-  const run = async () => {
-    if (running){runRef.current=false;return;}
-    runRef.current=true; setRunning(true);
-    setFrames([{arr:[...array]}]);
-    const frms=[{arr:[...array]}];
-    const gen = algoFn(array, target);
+  const setSpeed = (v) => { speedRef.current = v; setSpeedState(v); };
+  const getDelay = () => Math.max(5, Math.round(580 - speedRef.current * 5.8));
+
+  const runWith = async (arr, tgt) => {
+    if (running) { runRef.current = false; return; }
+    runRef.current = true; setRunning(true);
+    setFrames([{arr:[...arr]}]);
+    const frms = [{arr:[...arr]}];
+    const gen = algoFn(arr, tgt);
     for await (const f of gen) {
       if (!runRef.current) break;
       frms.push(f); setFrames([...frms]);
-      await sleep(Math.max(5,300-speed*2.9));
+      await sleep(getDelay());
     }
-    runRef.current=false; setRunning(false);
+    runRef.current = false; setRunning(false);
   };
 
+  const run = () => runWith(array, target);
   const reset = () => { setFrames([{arr:[...array]}]); };
-  return { frames, run, reset, running, speed, setSpeed };
+  const loadCustom = (newArr, newTarget) => { setArray(newArr); setFrames([{arr:[...newArr]}]); };
+
+  return { frames, array, run, runWith, reset, loadCustom, running, speed, setSpeed, logHeight, setLogHeight };
 }
 
+// ─── Default datasets ──────────────────────────────────────────────────────────
+const DEFAULT_SORT_ARR = [64,38,25,52,11,77,43,19,88,33,56,72,8,47,91,29,15,60,84,37];
+const DEFAULT_SEARCH_SORTED = [3,7,12,18,24,31,37,45,52,58,63,71,77,84,90,96];
+const DEFAULT_SEARCH_UNSORTED = [47,82,13,68,5,91,34,57,26,74,40,19,63,88,31,52];
+
 function SortPanel({ algoFn, title, subtitle }) {
-  const { frames, run, reset, running, speed, setSpeed } = useArrayAlgo(algoFn);
-  return <ArrayVisualizer frames={frames} onRun={run} onReset={reset} running={running} speed={speed} onSpeedChange={setSpeed} title={title} subtitle={subtitle} showBars={true} />;
+  const [inputOpen, setInputOpen] = useState(false);
+  const [rawInput, setRawInput] = useState("");
+  const [inputError, setInputError] = useState("");
+  const hook = useArrayAlgo(algoFn, DEFAULT_SORT_ARR, null);
+
+  const applyCustom = () => {
+    const vals = rawInput.split(",").map(s => parseInt(s.trim(), 10));
+    if (vals.some(isNaN) || vals.length < 3) { setInputError("Enter at least 3 comma-separated integers."); return; }
+    if (vals.length > 40) { setInputError("Max 40 values."); return; }
+    if (vals.some(v => v < 1 || v > 999)) { setInputError("Values must be between 1 and 999."); return; }
+    hook.loadCustom(vals, null);
+    setInputError("");
+    setInputOpen(false);
+  };
+
+  return (
+    <div>
+      <InputPanel title="Custom Array Input" open={inputOpen} onToggle={() => setInputOpen(o => !o)}>
+        <div className="input-panel-row">
+          <Btn variant="secondary" onClick={() => { hook.loadCustom(DEFAULT_SORT_ARR, null); setRawInput(""); setInputError(""); setInputOpen(false); }}>
+            Restore Default
+          </Btn>
+        </div>
+        <div className="input-panel-row">
+          <input
+            className="input"
+            type="text"
+            value={rawInput}
+            onChange={e => { setRawInput(e.target.value); setInputError(""); }}
+            onKeyDown={e => e.key === "Enter" && applyCustom()}
+            placeholder="e.g. 42, 7, 88, 3, 51, 19, 65"
+            aria-label="Custom array values"
+            style={{flex:1}}
+          />
+          <Btn variant="primary" onClick={applyCustom} disabled={hook.running}>Apply</Btn>
+        </div>
+        <p className="input-error" role="alert" aria-live="polite">{inputError}</p>
+        <p className="input-panel-hint">3–40 integers, each 1–999, separated by commas. Insertion order preserved.</p>
+      </InputPanel>
+      <ArrayVisualizer
+        frames={hook.frames} onRun={hook.run} onReset={hook.reset}
+        running={hook.running} speed={hook.speed} onSpeedChange={hook.setSpeed}
+        logHeight={hook.logHeight} onLogHeightChange={hook.setLogHeight}
+        title={title} subtitle={subtitle} showBars={true}
+      />
+    </div>
+  );
 }
 
 function SearchPanel({ algoFn, sorted, title, subtitle, twoPtr=false, window=false }) {
-  const base = sorted
-    ? [3,7,12,18,24,31,37,45,52,58,63,71,77,84,90,96]
-    : Array.from({length:16},()=>Math.floor(Math.random()*90)+5);
-  const target = twoPtr ? 91 : window ? 4 : (sorted ? 45 : base[Math.floor(Math.random()*base.length)]);
-  const { frames, run, reset, running, speed, setSpeed } = useArrayAlgo(algoFn, base, target);
+  const DEFAULT_ARR = sorted ? DEFAULT_SEARCH_SORTED : DEFAULT_SEARCH_UNSORTED;
+  const DEFAULT_TARGET = twoPtr ? 91 : window ? 4 : (sorted ? 45 : 47);
+
+  const [inputOpen, setInputOpen] = useState(false);
+  const [rawArr, setRawArr] = useState("");
+  const [rawTarget, setRawTarget] = useState("");
+  const [inputError, setInputError] = useState("");
+  const [displayTarget, setDisplayTarget] = useState(DEFAULT_TARGET);
+
+  const hook = useArrayAlgo(algoFn, DEFAULT_ARR, DEFAULT_TARGET);
+
+  const applyCustom = () => {
+    const vals = rawArr.split(",").map(s => parseInt(s.trim(), 10));
+    if (vals.some(isNaN) || vals.length < 3) { setInputError("Enter at least 3 comma-separated integers."); return; }
+    if (vals.length > 32) { setInputError("Max 32 values."); return; }
+    if (sorted) {
+      for (let i = 1; i < vals.length; i++) {
+        if (vals[i] < vals[i-1]) { setInputError("Binary search requires a sorted (ascending) array."); return; }
+      }
+    }
+    let tgt = parseInt(rawTarget, 10);
+    if (window) {
+      if (isNaN(tgt) || tgt < 1 || tgt >= vals.length) { setInputError(`Window size k must be 1–${vals.length - 1}.`); return; }
+    } else if (twoPtr) {
+      if (isNaN(tgt)) { setInputError("Enter a target sum."); return; }
+    } else {
+      if (isNaN(tgt)) tgt = vals[Math.floor(vals.length / 2)];
+    }
+    hook.loadCustom(vals, tgt);
+    setDisplayTarget(tgt);
+    setInputError("");
+    setInputOpen(false);
+  };
+
+  const targetLabel = twoPtr ? "sum target" : window ? "window k" : "search target";
 
   const controls = (
-    <div className="info-bar" style={{marginBottom:0,marginRight:"var(--sp-2)"}}>
-      <StatBar label="Target" value={twoPtr ? "sum=91" : window ? "k=4" : String(target)} />
+    <div className="info-bar" style={{marginBottom:0, marginRight:"var(--sp-2)"}}>
+      <StatBar label={targetLabel} value={String(displayTarget)} />
     </div>
   );
 
-  return <ArrayVisualizer frames={frames} onRun={run} onReset={reset} running={running} speed={speed} onSpeedChange={setSpeed} title={title} subtitle={subtitle} controls={controls} showBars={false} />;
+  return (
+    <div>
+      <InputPanel title="Custom Input" open={inputOpen} onToggle={() => setInputOpen(o => !o)}>
+        <div className="input-panel-row">
+          <Btn variant="secondary" onClick={() => { hook.loadCustom(DEFAULT_ARR, DEFAULT_TARGET); setDisplayTarget(DEFAULT_TARGET); setRawArr(""); setRawTarget(""); setInputError(""); setInputOpen(false); }}>
+            Restore Default
+          </Btn>
+        </div>
+        <div className="input-panel-row">
+          <input
+            className="input"
+            type="text"
+            value={rawArr}
+            onChange={e => { setRawArr(e.target.value); setInputError(""); }}
+            placeholder={sorted ? "Sorted integers, e.g. 3, 7, 15, 22, 41" : "Integers, e.g. 47, 82, 13, 5"}
+            aria-label="Array values"
+            style={{flex:1}}
+          />
+        </div>
+        <div className="input-panel-row">
+          <input
+            className="input"
+            type="number"
+            value={rawTarget}
+            onChange={e => { setRawTarget(e.target.value); setInputError(""); }}
+            placeholder={window ? "Window size k" : twoPtr ? "Target sum" : "Search target (optional)"}
+            aria-label={targetLabel}
+            style={{width:160}}
+          />
+          <Btn variant="primary" onClick={applyCustom} disabled={hook.running}>Apply</Btn>
+        </div>
+        <p className="input-error" role="alert" aria-live="polite">{inputError}</p>
+        <p className="input-panel-hint">
+          {sorted && "Array must be sorted ascending for binary search. "}
+          {window && "k = window size (1 to array length − 1). "}
+          {twoPtr && "Array must be sorted ascending. Enter a sum target. "}
+          {!sorted && !window && !twoPtr && "Leave target blank to use the middle element. "}
+          Max 32 values.
+        </p>
+      </InputPanel>
+      <ArrayVisualizer
+        frames={hook.frames} onRun={() => hook.runWith(hook.array, displayTarget)}
+        onReset={hook.reset} running={hook.running}
+        speed={hook.speed} onSpeedChange={hook.setSpeed}
+        logHeight={hook.logHeight} onLogHeightChange={hook.setLogHeight}
+        title={title} subtitle={subtitle} controls={controls} showBars={false}
+      />
+    </div>
+  );
 }
 
 function VisRouter({ id }) {
@@ -2709,7 +3269,7 @@ function VisRouter({ id }) {
   return render();
 }
 
-// ─── 6. SIDEBAR ───────────────────────────────────────────────────────────────
+// ─── 6. SIDEBAR (desktop) ─────────────────────────────────────────────────────
 
 function Sidebar({ activeId, onSelect }) {
   const [open, setOpen] = useState(() => {
@@ -2758,12 +3318,72 @@ function Sidebar({ activeId, onSelect }) {
   );
 }
 
+// ─── 6b. MOBILE NAV + DRAWER ──────────────────────────────────────────────────
+
+function MobileNav({ activeCatId, onCatSelect }) {
+  return (
+    <div className="mobile-nav-bar" role="navigation" aria-label="Category navigation">
+      <div className="mobile-nav-inner">
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat.id}
+            className={`mobile-nav-tab${activeCatId === cat.id ? " active" : ""}`}
+            onClick={() => onCatSelect(cat.id)}
+            aria-pressed={activeCatId === cat.id}
+            aria-label={cat.label}
+          >
+            <div className="mobile-cat-dot" style={{background: cat.color}} aria-hidden="true" />
+            {cat.label.split(" ")[0]}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MobileDrawer({ activeCatId, activeId, onSelect, onClose }) {
+  const cat = CATEGORIES.find(c => c.id === activeCatId);
+  if (!cat) return null;
+  return (
+    <>
+      <div className="mobile-overlay open" onClick={onClose} aria-hidden="true" />
+      <div className="mobile-drawer open" role="dialog" aria-label={`${cat.label} algorithms`}>
+        <div className="mobile-drawer-head">
+          <span className="mobile-drawer-cat-name" style={{color: cat.color}}>{cat.label}</span>
+          <button className="mobile-drawer-close" onClick={onClose} aria-label="Close drawer">Close</button>
+        </div>
+        {cat.items.map(item => (
+          <button
+            key={item.id}
+            className={`mobile-drawer-item${activeId === item.id ? " active" : ""}`}
+            onClick={() => { onSelect(item.id); onClose(); }}
+            aria-current={activeId === item.id ? "page" : undefined}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
 // ─── 7. SHELL ─────────────────────────────────────────────────────────────────
 
 export default function Synapse() {
   const [activeId, setActiveId] = useState("merge-sort");
+  const [mobileCatId, setMobileCatId] = useState(null);
+
   const activeItem = CATEGORIES.flatMap(c=>c.items).find(i=>i.id===activeId);
   const activeCategory = CATEGORIES.find(c=>c.items.some(i=>i.id===activeId));
+
+  const handleMobileCatSelect = (catId) => {
+    setMobileCatId(prev => prev === catId ? null : catId);
+  };
+
+  const handleMobileItemSelect = (id) => {
+    setActiveId(id);
+    setMobileCatId(null);
+  };
 
   return (
     <div className="synapse-shell">
@@ -2787,6 +3407,17 @@ export default function Synapse() {
       <main className="synapse-main" id="main-content" tabIndex={-1}>
         <VisRouter key={activeId} id={activeId} />
       </main>
+
+      {/* Mobile navigation */}
+      <MobileNav activeCatId={mobileCatId} onCatSelect={handleMobileCatSelect} />
+      {mobileCatId && (
+        <MobileDrawer
+          activeCatId={mobileCatId}
+          activeId={activeId}
+          onSelect={handleMobileItemSelect}
+          onClose={() => setMobileCatId(null)}
+        />
+      )}
     </div>
   );
 }
